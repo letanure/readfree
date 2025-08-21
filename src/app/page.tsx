@@ -1,11 +1,11 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 const ACTIVATION_CODE = '389e729290' // Change this to your secret code
 
-export default function Home() {
+function HomeContent() {
   const [url, setUrl] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const router = useRouter()
@@ -79,5 +79,19 @@ export default function Home() {
         </form>
       </div>
     </main>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-2xl text-gray-600">Loading...</div>
+        </div>
+      </main>
+    }>
+      <HomeContent />
+    </Suspense>
   )
 }
