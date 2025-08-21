@@ -78,6 +78,22 @@ export async function POST(request: NextRequest) {
       console.log(`📊 ${method} response:`, response.status)
     }
     
+    // Try Bingbot
+    if (!response.ok) {
+      console.log('🔎 Trying Bingbot user-agent...')
+      method = 'Bingbot'
+      response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate',
+          'Connection': 'keep-alive'
+        }
+      })
+      console.log(`📊 ${method} response:`, response.status)
+    }
+
     // Last resort: Googlebot
     if (!response.ok) {
       console.log('🤖 Trying Googlebot user-agent...')
@@ -90,6 +106,20 @@ export async function POST(request: NextRequest) {
           'Accept-Encoding': 'gzip, deflate',
           'Connection': 'keep-alive',
           'Upgrade-Insecure-Requests': '1'
+        }
+      })
+      console.log(`📊 ${method} response:`, response.status)
+    }
+
+    // Try archive.today as fallback
+    if (!response.ok) {
+      console.log('📚 Trying archive.today...')
+      method = 'Archive'
+      const archiveUrl = `https://archive.today/latest/${url}`
+      response = await fetch(archiveUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         }
       })
       console.log(`📊 ${method} response:`, response.status)
