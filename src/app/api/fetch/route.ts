@@ -27,22 +27,44 @@ export async function POST(request: NextRequest) {
     let response;
     let method = '';
     
-    // Method 1: Twitter referrer (works for many news sites)
-    console.log('🐦 Trying Twitter referrer...')
-    method = 'Twitter'
-    response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Referer': 'https://t.co/',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1'
-      }
-    })
+    // Special handling for Medium
+    if (url.includes('medium.com')) {
+      console.log('📝 Detected Medium article, using special headers...')
+      method = 'Medium'
+      response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Referer': 'https://t.co/',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1'
+        }
+      })
+      console.log(`📊 ${method} response:`, response.status)
+    }
     
-    console.log(`📊 ${method} response:`, response.status)
+    // Method 1: Twitter referrer (works for many news sites)
+    if (!response || !response.ok) {
+      console.log('🐦 Trying Twitter referrer...')
+      method = 'Twitter'
+      response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Referer': 'https://t.co/',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1'
+        }
+      })
+      
+      console.log(`📊 ${method} response:`, response.status)
+    }
     
     // If Twitter fails, try Google
     if (!response.ok) {

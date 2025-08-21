@@ -145,13 +145,25 @@ export default function ClientArticlePage({ url }: { url: string }) {
             const link = e.target.closest('a');
             if (!link || !link.href) return;
             
-            // Get the absolute URL
-            const targetUrl = link.href;
+            let targetUrl = link.href;
+            
+            // Handle relative URLs
+            try {
+              // If href is relative, make it absolute using current document location
+              if (!targetUrl.startsWith('http')) {
+                const baseUrl = document.location.origin;
+                targetUrl = new URL(targetUrl, baseUrl).href;
+              }
+            } catch (err) {
+              console.log('Invalid URL:', targetUrl, err);
+              return;
+            }
             
             // Check if it's a real navigation link (not # or javascript:)
             if (targetUrl.startsWith('javascript:') || 
-                targetUrl.startsWith('#') || 
-                targetUrl.startsWith('mailto:')) {
+                targetUrl === '#' || 
+                targetUrl.startsWith('mailto:') ||
+                targetUrl.startsWith('tel:')) {
               return;
             }
             
