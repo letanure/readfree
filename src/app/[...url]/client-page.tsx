@@ -251,7 +251,9 @@ export default function ClientArticlePage({ url }: { url: string }) {
         <iframe 
           srcDoc={getEnhancedContent()}
           className={`w-full h-[calc(100vh-64px)] ${navigationMode ? 'border-2 border-blue-500' : ''}`}
-          sandbox="allow-same-origin allow-scripts allow-top-navigation"
+          sandbox={url.includes('medium.com') 
+            ? "allow-same-origin allow-top-navigation" 
+            : "allow-same-origin allow-scripts allow-top-navigation"}
           title="Article content"
         />
       </div>

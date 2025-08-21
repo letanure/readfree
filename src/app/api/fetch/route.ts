@@ -153,8 +153,19 @@ export async function POST(request: NextRequest) {
     
     console.log(`✅ Success with ${method} method!`)
 
-    const html = await response.text()
+    let html = await response.text()
     console.log('✅ HTML fetched, length:', html.length)
+    
+    // Strip problematic scripts for Medium
+    if (url.includes('medium.com')) {
+      console.log('🧹 Cleaning Medium scripts...')
+      // Remove script tags that might clear the content
+      html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      // Remove noscript tags
+      html = html.replace(/<noscript\b[^<]*(?:(?!<\/noscript>)<[^<]*)*<\/noscript>/gi, '')
+      // Remove meta refresh
+      html = html.replace(/<meta[^>]*http-equiv=["']?refresh["']?[^>]*>/gi, '')
+    }
     
     return NextResponse.json({ 
       content: html,
